@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace ResourceApi.Models
 {
@@ -15,33 +13,55 @@ namespace ResourceApi.Models
             ItemsFillDefault();
         }
 
-        private static void ItemsFillDefault() // заполняем словарь данными по умолчанию 
+        /// <summary>
+        /// Заполнение потокобезопасного словаря данными по умолчанию
+        /// </summary>
+        public static void ItemsFillDefault() // заполняем словарь данными по умолчанию 
         {
             for (int i = 1; i < 5; i++)
                 Items.TryAdd(i, new Resource { Id = i, Name = $"Name {i}" });
         }
 
+        /// <summary>
+        /// Добавление одного элемента в словарь
+        /// </summary>
+        /// <param name="Resource">Добавляемый объект</param>
+        /// <returns></returns>
         public static bool AddItem(Resource Resource) // Добавим новый ресурс
         {
             if (Items.ContainsKey(Resource.Id))
+            {
+                Trace.TraceError($"Невозможно добавить ресурс, объект с идентификатором \"{Resource.Id}\" уже существует");
                 return false;
+            }
 
+            Trace.TraceInformation($"Оъект \"{Resource.Id}\" добавлен");
             return Items.TryAdd(Resource.Id, Resource);
         }
 
-        public static bool RemoveItem(decimal Key) // удаляем ресурс
+        /// <summary>
+        /// Обновляем инфо о ресурсе
+        /// </summary>
+        /// <param name="Resource">Объект обновляемого ресурса</param>
+        /// <returns></returns>
+        public static bool UpdateItem(Resource Resource) 
         {
-            return Items.TryRemove(Key, out _);
-        }
-
-        public static bool UpdateItem(Resource Resource) // обновляем ресурс
-        {
-            if (Items.ContainsKey(Resource.Id))
+            try
             {
-                Items[Resource.Id] = Resource;
-                return true;
+                if (Items.ContainsKey(Resource.Id))
+                {
+                    Items[Resource.Id] = Resource;
+                    Trace.TraceInformation($"Оъект \"{Resource.Id}\" обновлен");
+                    return true;
+                }
+                Trace.TraceError($"Невозможно обновить ресурс, объект с идентификатором \"{Resource.Id}\" не существует");
+                return false;
             }
-            return false;
+            catch(Exception ex)
+            {
+                Trace.TraceError($"Невозможно обновить ресурс. {ex.Message}");
+                return false;
+            }
         }
     }
 }

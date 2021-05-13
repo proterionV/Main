@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ResourceApi.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace ResourceApi.Controllers
 {
@@ -12,15 +10,22 @@ namespace ResourceApi.Controllers
     [Route("[controller]")]
     public class ResourceController : ControllerBase
     {
+        public ResourceController()
+        {
+
+        }
+
         [HttpGet]
         public IEnumerable<Resource> Get()
         {
+            Trace.TraceInformation("Запрос всех объектов словаря");
             return DataItem.Items.Values.ToList();
         }
 
         [HttpGet("{id}")]
         public Resource Get(int id)
         {
+            Trace.TraceInformation($"Запрос объекта {id} словаря");
             return DataItem.Items.Values.FirstOrDefault(x => x.Id == id);
         }
 
@@ -47,9 +52,13 @@ namespace ResourceApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            if (DataItem.RemoveItem(id))
+            if (DataItem.Items.TryRemove(id, out _))
+            {
+                Trace.TraceInformation($"Оъект \"{id}\" успешно удален");
                 return Ok();
+            }
 
+            Trace.TraceError($"Не удалось удалить объект \"{id}\"");
             return BadRequest(ModelState);
         }
     }
