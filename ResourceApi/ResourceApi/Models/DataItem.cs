@@ -6,7 +6,7 @@ namespace ResourceApi.Models
 {
     public static class DataItem
     {
-        public static ConcurrentDictionary<decimal, Resource> Items { get; set; } = new ConcurrentDictionary<decimal, Resource>();
+        public static ConcurrentDictionary<decimal, Resource> Items;
 
         static DataItem()
         {
@@ -16,8 +16,10 @@ namespace ResourceApi.Models
         /// <summary>
         /// Заполнение потокобезопасного словаря данными по умолчанию
         /// </summary>
-        public static void ItemsFillDefault() // заполняем словарь данными по умолчанию 
+        private static void ItemsFillDefault() 
         {
+            Items = new ConcurrentDictionary<decimal, Resource>();
+
             for (int i = 1; i < 5; i++)
                 Items.TryAdd(i, new Resource { Id = i, Name = $"Name {i}" });
         }
@@ -27,7 +29,7 @@ namespace ResourceApi.Models
         /// </summary>
         /// <param name="Resource">Добавляемый объект</param>
         /// <returns></returns>
-        public static bool AddItem(Resource Resource) // Добавим новый ресурс
+        public static bool AddItem(Resource Resource) 
         {
             if (Items.ContainsKey(Resource.Id))
             {

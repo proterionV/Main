@@ -37,4 +37,3 @@ D:\ResourceApi\Main\ResourceApi\ResourceApi\obj\Debug\netcoreapp3.1\ResourceApi.
 D:\ResourceApi\Main\ResourceApi\ResourceApi\obj\Debug\netcoreapp3.1\ResourceApi.dll
 D:\ResourceApi\Main\ResourceApi\ResourceApi\obj\Debug\netcoreapp3.1\ResourceApi.pdb
 D:\ResourceApi\Main\ResourceApi\ResourceApi\obj\Debug\netcoreapp3.1\ResourceApi.genruntimeconfig.cache
-D:\ResourceApi\Main\ResourceApi\ResourceApi\obj\Debug\netcoreapp3.1\ResourceApi.csprojAssemblyReference.cache

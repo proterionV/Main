@@ -15,6 +15,7 @@ namespace ResourceApi.Controllers
 
         }
 
+        #region requsts
         [HttpGet]
         public IEnumerable<Resource> Get()
         {
@@ -61,5 +62,6 @@ namespace ResourceApi.Controllers
             Trace.TraceError($"Не удалось удалить объект \"{id}\"");
             return BadRequest(ModelState);
         }
+        #endregion
     }
 }
