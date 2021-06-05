@@ -1,0 +1,14 @@
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\bin\Debug\ConsoleApp.exe.config
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\bin\Debug\ConsoleApp.exe
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\bin\Debug\ConsoleApp.pdb
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\bin\Debug\EntityFramework.dll
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\bin\Debug\EntityFramework.SqlServer.dll
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\bin\Debug\EntityFramework.xml
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\bin\Debug\EntityFramework.SqlServer.xml
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\obj\Debug\ConsoleApp.csproj.CoreCompileInputs.cache
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\obj\Debug\ConsoleApp.csproj.CopyComplete
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\obj\Debug\ConsoleApp.exe
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\obj\Debug\ConsoleApp.pdb
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\obj\Debug\ConsoleApp.csprojAssemblyReference.cache
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\bin\Debug\Newtonsoft.Json.dll
+D:\ResourceApi\Main\ResourceApi\ConsoleApp\bin\Debug\Newtonsoft.Json.xml
