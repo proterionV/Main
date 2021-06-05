@@ -10,7 +10,7 @@ namespace MainApi.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(@"host=localhost;database=postgres;user id=postgres;password=Septr@k@n800;");
+            optionsBuilder.UseNpgsql(@"host=localhost;database=postgres;user id=postgres;password=password;");
             optionsBuilder.EnableSensitiveDataLogging(true);
         }
     }
