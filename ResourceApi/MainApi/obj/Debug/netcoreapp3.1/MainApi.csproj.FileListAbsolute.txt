@@ -35,3 +35,4 @@ D:\ResourceApi\Main\ResourceApi\MainApi\obj\Debug\netcoreapp3.1\MainApi.csproj.C
 D:\ResourceApi\Main\ResourceApi\MainApi\obj\Debug\netcoreapp3.1\MainApi.dll
 D:\ResourceApi\Main\ResourceApi\MainApi\obj\Debug\netcoreapp3.1\MainApi.pdb
 D:\ResourceApi\Main\ResourceApi\MainApi\obj\Debug\netcoreapp3.1\MainApi.genruntimeconfig.cache
+D:\ResourceApi\Main\ResourceApi\MainApi\obj\Debug\netcoreapp3.1\MainApi.csprojAssemblyReference.cache

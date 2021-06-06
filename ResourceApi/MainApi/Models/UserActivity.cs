@@ -17,7 +17,7 @@ namespace MainApi.Models
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime DateLastActivity { get; set; }
 
-        public int DaysByActivity => ((DateLastActivity > DateTime.Now ? DateRegistration : DateLastActivity) - DateRegistration).Days;
+        public int DaysByActivity => (DateLastActivity - DateRegistration).Days;
     }
 
     internal class DateFormatValidate : ValidationAttribute

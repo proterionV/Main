@@ -88,15 +88,14 @@ namespace MainApi.Controllers
             }
         }
 
-        [HttpPost("retention/{id}")]
-        public IActionResult Post([FromBody] IEnumerable<UserActivity> userActivities, int id)
+        [HttpGet("retention")]
+        public IActionResult GetRetention()
         {
-            _logger.LogInformation($"Запрос расчета удержания: {id} дней");
+            _logger.LogInformation($"Запрос расчета удержания");
 
             try
             {
-
-                return Ok("{\"result\":" + _repos.Calculate(userActivities, id) + "}");
+                return Ok("{\"result\":" + _repos.Calculate(_repos.GetAll(), 7) + "}");
             }
             catch (Exception ex)
             {
