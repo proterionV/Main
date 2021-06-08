@@ -1,9 +1,9 @@
-﻿using MainApi.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading.Tasks;
+
+using MainApi.Models;
 
 namespace MainApi.Services
 {
@@ -25,10 +25,24 @@ namespace MainApi.Services
 
         public int Calculate(IEnumerable<UserActivity> ua, int days)
         {
-            int quantityActivity = ua.Where(a => a.DaysByActivity >= days).Count();
-            int quantityRegistration = ua.Where(a => (DateTime.Now - a.DateRegistration).Days >= days).Count();
+            double quantityActivity = ua.Where(a => a.DaysByActivity >= days).Count();
+            double quantityRegistration = ua.Where(a => (DateTime.Now - a.DateRegistration).Days >= days).Count();
+            double result = (quantityActivity / (quantityRegistration < 1 ? 1 : quantityRegistration)) * 100;
 
-            return (quantityActivity / (quantityRegistration < 1 ? 1 : quantityRegistration)) * ua.Count();
+            return (int)result;
+        }
+
+        public object Calculate(IEnumerable<UserActivity> ua)
+        {
+            double quantityActivity = ua.Where(a => a.DaysByActivity >= 7).Count();
+            double quantityRegistration = ua.Where(a => (DateTime.Now - a.DateRegistration).Days >= 7).Count();
+            double result = (quantityActivity / (quantityRegistration < 1 ? 1 : quantityRegistration)) * 100;
+
+            var groups = ua.GroupBy(l => l.DaysByActivity).Select(g => new { Days = g.Key, UsersCount = g.Count() });
+
+            var group = new { Data = groups.ToList(), result = (int)result };
+
+            return group;
         }
 
         public IEnumerable<UserActivity> GetAll()
@@ -36,9 +50,16 @@ namespace MainApi.Services
             return db.UsersActivities;
         }
 
-        public void Remove(IEnumerable<UserActivity> ua)
+        public void RemoveAll(IEnumerable<UserActivity> ua)
         {
             db.UsersActivities.RemoveRange(ua);
+            db.SaveChanges();
+        }
+
+        public void RemoveOne(int id)
+        {
+            db.UsersActivities.Remove(db.UsersActivities.Find(id));
+            db.SaveChanges();
         }
 
         public UserActivity GetOne(int id)

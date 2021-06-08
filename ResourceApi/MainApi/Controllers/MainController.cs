@@ -54,14 +54,31 @@ namespace MainApi.Controllers
             }
         }
 
-        [HttpDelete("remove")]
+        [HttpDelete("removeall")]
         public IActionResult Delete(IEnumerable<UserActivity> ua)
         {
             _logger.LogInformation("Удаление всех записей");
 
             try
             {
-                _repos.Remove(ua);
+                _repos.RemoveAll(ua);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("removeone/{id}")]
+        public IActionResult Delete(int id)
+        {
+            _logger.LogInformation($"Удаление пользователя {id}");
+
+            try
+            {
+                _repos.RemoveOne(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -95,7 +112,7 @@ namespace MainApi.Controllers
 
             try
             {
-                return Ok("{\"result\":" + _repos.Calculate(_repos.GetAll(), 7) + "}");
+                return Ok(_repos.Calculate(_repos.GetAll()));
             }
             catch (Exception ex)
             {

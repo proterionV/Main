@@ -14,7 +14,9 @@ namespace MainApi.Services
 
         UserActivity GetOne(int id);
 
-        void Remove(IEnumerable<UserActivity> ua);
+        void RemoveAll(IEnumerable<UserActivity> ua);
+
+        void RemoveOne(int id);
 
         int Calculate(IEnumerable<UserActivity> ua, int days);
     }

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MainApi.Models
 {
     public class UserActivity
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Required(ErrorMessage = "Некорректный идентификатор пользователя")]
         public int UserID { get; set; }
 
