@@ -12,7 +12,6 @@ namespace MainApi.Models
         {
             optionsBuilder.UseNpgsql(@"host=35.233.102.116;database=postgres;user id=postgres;password=Septr@k@n800;");
             optionsBuilder.EnableSensitiveDataLogging(true);
-            optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
         }
     }
 }

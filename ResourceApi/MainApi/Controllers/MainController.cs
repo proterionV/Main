@@ -54,23 +54,6 @@ namespace MainApi.Controllers
             }
         }
 
-        [HttpDelete("removeall")]
-        public IActionResult Delete(IEnumerable<UserActivity> ua)
-        {
-            _logger.LogInformation("Удаление всех записей");
-
-            try
-            {
-                _repos.RemoveAll(ua);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
-            }
-        }
-
         [HttpDelete("removeone/{id}")]
         public IActionResult Delete(int id)
         {
@@ -79,23 +62,6 @@ namespace MainApi.Controllers
             try
             {
                 _repos.RemoveOne(id);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost("saveall")]
-        public IActionResult Post([FromBody] IEnumerable<UserActivity> userActivities)
-        {
-            _logger.LogInformation("Сохранение всех записей");
-
-            try
-            {
-                _repos.SaveAll(userActivities);
                 return Ok();
             }
             catch (Exception ex)

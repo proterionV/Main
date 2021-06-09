@@ -13,15 +13,22 @@ namespace MainApi.Services
 
         public UserActivity Update(UserActivity ua)
         {
-            db.Update(ua);
+            var activity = db.UsersActivities.FirstOrDefault(u => u.UserID == ua.UserID);
+
+            if (activity is null) throw new Exception($"Объект {ua.UserID} не найден");
+
+            activity.DateRegistration = ua.DateRegistration;
+            activity.DateLastActivity = ua.DateLastActivity;
+
+            db.UsersActivities.Update(activity);
             db.SaveChanges();
-            return db.UsersActivities.Find(ua.UserID);
+
+            return activity;
         }
 
         public void SaveOne(UserActivity ua)
         {
-            db.ChangeTracker.QueryTrackingBehavior = Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking;
-            db.Add(ua);
+            db.UsersActivities.Add(ua);
             db.SaveChanges();
         }
 
@@ -66,7 +73,11 @@ namespace MainApi.Services
 
         public void RemoveOne(int id)
         {
-            db.Remove(db.UsersActivities.Find(id));
+            UserActivity userActivity = db.UsersActivities.FirstOrDefault(u => u.UserID == id);
+
+            if (userActivity is null) throw new Exception($"Объект {id} не найден.");
+
+            db.UsersActivities.Remove(userActivity);
             db.SaveChanges();
         }
 
