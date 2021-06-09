@@ -20,6 +20,7 @@ namespace MainApi.Services
 
         public void SaveOne(UserActivity ua)
         {
+            db.ChangeTracker.QueryTrackingBehavior = Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking;
             db.Add(ua);
             db.SaveChanges();
         }

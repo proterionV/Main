@@ -121,7 +121,7 @@ namespace MainApi.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("update")]
         public IActionResult Put([FromBody] UserActivity userActivity)
         {
             _logger.LogInformation($"Изменение записи {userActivity.UserID}");
@@ -129,7 +129,7 @@ namespace MainApi.Controllers
             try
             {
                 _repos.Update(userActivity);
-                return Ok();
+                return Ok(userActivity);
             }
             catch (Exception ex)
             {
