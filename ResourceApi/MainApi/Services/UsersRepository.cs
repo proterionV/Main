@@ -13,7 +13,7 @@ namespace MainApi.Services
 
         public void SaveOne(UserActivity ua)
         {
-            db.UsersActivities.Add(ua);
+            db.Add(ua);
             db.SaveChanges();
         }
 
@@ -58,7 +58,7 @@ namespace MainApi.Services
 
         public void RemoveOne(int id)
         {
-            db.UsersActivities.Remove(db.UsersActivities.Find(id));
+            db.Remove(db.UsersActivities.Find(id));
             db.SaveChanges();
         }
 
