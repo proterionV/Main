@@ -120,6 +120,23 @@ namespace MainApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut]
+        public IActionResult Put([FromBody] UserActivity userActivity)
+        {
+            _logger.LogInformation($"Изменение записи {userActivity.UserID}");
+
+            try
+            {
+                _repos.Update(userActivity);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
         #endregion
     }
 }

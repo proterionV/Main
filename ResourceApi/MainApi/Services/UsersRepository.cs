@@ -11,6 +11,13 @@ namespace MainApi.Services
     {
         private UserContext db = new UserContext();
 
+        public UserActivity Update(UserActivity ua)
+        {
+            db.Update(ua);
+            db.SaveChanges();
+            return db.UsersActivities.Find(ua.UserID);
+        }
+
         public void SaveOne(UserActivity ua)
         {
             db.Add(ua);

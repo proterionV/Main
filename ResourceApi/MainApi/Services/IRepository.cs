@@ -6,6 +6,8 @@ namespace MainApi.Services
 {
     public interface IRepository
     {
+        UserActivity Update(UserActivity ua);
+
         void SaveOne(UserActivity ua);
 
         void SaveAll(IEnumerable<UserActivity> ua);
