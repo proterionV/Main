@@ -18,7 +18,7 @@ namespace MainApi
                 options.JsonSerializerOptions.Converters.Add(new DateFormat()); // формат DateTime при сериализации
             });
 
-            services.AddSingleton<IRepository, UsersRepository>(); // один экземпляр на все вермя функционирования
+            services.AddTransient<IRepository, UsersRepository>(); // один экземпляр на все вермя функционирования
         }
 
         public IConfiguration Configuration;
