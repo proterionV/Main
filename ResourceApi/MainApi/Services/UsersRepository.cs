@@ -1,18 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using MainApi.Models;
+using MainApi.Models.Types;
 
 namespace MainApi.Services
 {
     public class UsersRepository : IDisposable, IRepository
     {
         private UserContext db = new UserContext();
+        private ExecutionContext ec = new ExecutionContext();
+        private readonly Stopwatch sw = new Stopwatch();
 
         public UserActivity Update(UserActivity ua)
         {
+            sw.Start();
+
             var activity = db.UsersActivities.FirstOrDefault(u => u.UserID == ua.UserID);
 
             if (activity is null) throw new Exception($"Объект {ua.UserID} не найден");
@@ -23,17 +29,28 @@ namespace MainApi.Services
             db.UsersActivities.Update(activity);
             db.SaveChanges();
 
+            sw.Stop();
+            ec.Profiling.Add(new ExecutionTime(Operations.Update, sw.ElapsedTicks));
+            ec.SaveChanges();
+
             return activity;
         }
 
         public void SaveOne(UserActivity ua)
         {
+            sw.Start();
+
             db.UsersActivities.Add(ua);
             db.SaveChanges();
+
+            sw.Stop();
+            ec.Profiling.Add(new ExecutionTime(Operations.GetAll, sw.ElapsedTicks));
+            ec.SaveChanges();
         }
 
         public void SaveAll(IEnumerable<UserActivity> ua)
         {
+
             db.UsersActivities.AddRange(ua.Distinct(new Compare()));
             db.SaveChanges();
         }
@@ -49,6 +66,8 @@ namespace MainApi.Services
 
         public object Calculate(IEnumerable<UserActivity> ua)
         {
+            sw.Start();
+            
             double quantityActivity = ua.Where(a => a.DaysByActivity >= 7).Count();
             double quantityRegistration = ua.Where(a => (DateTime.Now - a.DateRegistration).Days >= 7).Count();
             double result = (quantityActivity / (quantityRegistration < 1 ? 1 : quantityRegistration)) * 100;
@@ -57,12 +76,21 @@ namespace MainApi.Services
 
             var group = new { Data = groups.ToList(), result = (int)result };
 
+            sw.Stop();
+            ec.Profiling.Add(new ExecutionTime(Operations.Calculate, sw.ElapsedTicks));
+            ec.SaveChanges();
+
             return group;
         }
 
         public IEnumerable<UserActivity> GetAll()
         {
-            return db.UsersActivities;
+            sw.Start();
+            var usersActivities = db.UsersActivities;
+            sw.Stop();
+            ec.Profiling.Add(new ExecutionTime(Operations.GetAll, sw.ElapsedTicks));
+            ec.SaveChanges();
+            return usersActivities;
         }
 
         public void RemoveAll(IEnumerable<UserActivity> ua)
@@ -94,6 +122,12 @@ namespace MainApi.Services
                 {
                     db.Dispose();
                     db = null;
+                }
+
+                if (ec != null)
+                {
+                    ec.Dispose();
+                    ec = null;
                 }
             }
         }
