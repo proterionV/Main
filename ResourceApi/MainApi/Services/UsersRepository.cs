@@ -114,6 +114,13 @@ namespace MainApi.Services
             return db.UsersActivities.Find(id);
         }
 
+        public IEnumerable<object> GetExecutionTimes()
+        {
+            var groups = ec.Profiling.GroupBy(o => o.Operation).Select(g => new { Operation = g.Key, Elapsed = g.Sum(o => o.Elapsed), Count = g.Count() });
+
+            return groups;
+        }
+
         protected void Dispose(bool disposing)
         {
             if (disposing)

@@ -102,6 +102,21 @@ namespace MainApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("execution")]
+        public IActionResult GetExecution()
+        {
+            try
+            {
+                _logger.LogInformation("Запрос времени выполнения запросов");
+                return Ok(_repos.GetExecutionTimes());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
         #endregion
     }
 }
