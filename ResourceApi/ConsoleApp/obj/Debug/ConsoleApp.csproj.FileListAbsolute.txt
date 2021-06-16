@@ -9,6 +9,5 @@ D:\ResourceApi\Main\ResourceApi\ConsoleApp\obj\Debug\ConsoleApp.csproj.CoreCompi
 D:\ResourceApi\Main\ResourceApi\ConsoleApp\obj\Debug\ConsoleApp.csproj.CopyComplete
 D:\ResourceApi\Main\ResourceApi\ConsoleApp\obj\Debug\ConsoleApp.exe
 D:\ResourceApi\Main\ResourceApi\ConsoleApp\obj\Debug\ConsoleApp.pdb
-D:\ResourceApi\Main\ResourceApi\ConsoleApp\obj\Debug\ConsoleApp.csprojAssemblyReference.cache
 D:\ResourceApi\Main\ResourceApi\ConsoleApp\bin\Debug\Newtonsoft.Json.dll
 D:\ResourceApi\Main\ResourceApi\ConsoleApp\bin\Debug\Newtonsoft.Json.xml

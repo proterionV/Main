@@ -1,67 +1,125 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace ConsoleApp
 {
     class Program
     {
+        static readonly object locker = new object(); // экземпляр объекта для блокировки выполнения команд консоли
+        static readonly Queue queue = new Queue();    // очередь для определения очередности завершения выполнения
+
         static void Main()
         {
-            List<UserActivity> list = new List<UserActivity>() 
-            { 
-                new UserActivity { UserID = 0, DateRegistration = DateTime.Parse("01.05.2021"), DateLastActivity = DateTime.Parse("08.05.2021") },
-                new UserActivity { UserID = 0, DateRegistration = DateTime.Parse("02.05.2021"), DateLastActivity = DateTime.Parse("05.05.2021") },
-                new UserActivity { UserID = 0, DateRegistration = DateTime.Parse("03.05.2021"), DateLastActivity = DateTime.Parse("04.05.2021") },
-                new UserActivity { UserID = 0, DateRegistration = DateTime.Parse("04.05.2021"), DateLastActivity = DateTime.Parse("12.05.2021") },
-                new UserActivity { UserID = 0, DateRegistration = DateTime.Parse("05.05.2021"), DateLastActivity = DateTime.Parse("18.05.2021") },
-                new UserActivity { UserID = 0, DateRegistration = DateTime.Parse("06.05.2021"), DateLastActivity = DateTime.Parse("09.05.2021") },
-                new UserActivity { UserID = 0, DateRegistration = DateTime.Parse("07.05.2021"), DateLastActivity = DateTime.Parse("22.05.2021") },
-                new UserActivity { UserID = 0, DateRegistration = DateTime.Parse("01.06.2021"), DateLastActivity = DateTime.Parse("06.06.2021") },
-                new UserActivity { UserID = 0, DateRegistration = DateTime.Parse("02.06.2021"), DateLastActivity = DateTime.Parse("05.06.2021") },
-            };
+            #region ввод с консоли 
+            Console.Write("Object Count: ");
+            int maxObjects = int.Parse(Console.ReadLine()); // количество объектов
 
-            var groups = list.GroupBy(l => l.DaysByActivity).Select(g => new { Name = g.Key, Count = g.Count() });
-            groups.ToList().ForEach(g => Console.WriteLine($"Name: {g.Name} Count: {g.Count}"));
+            Console.Write("Thread Count: ");
+            int maxThreads = int.Parse(Console.ReadLine()); // количество потоков
 
-            var result = Calculate(list);
+            Console.Write("Load Length: ");
+            int maxSteps = int.Parse(Console.ReadLine()); // количество итераций
+            #endregion
 
+            ConsoleInit(maxSteps, maxObjects); 
 
+            // создание последовательности экземпляров c инициализацией начальных положений в конструкторе
+            var works = Enumerable.Range(0, maxObjects).Select(index => new Work(0, index));
 
+            // выполнение метода обработчика в отдельном потоке для каждого объекта с ожиданием завершения каждого потока
+            Parallel.ForEach(works, new ParallelOptions { MaxDegreeOfParallelism = maxThreads }, work => Handler(work, maxSteps));
+
+            // вывод сообщения о завершении обработки объектов на позицию следующей строки после последнего результата
+            Console.SetCursorPosition(0, maxObjects);
+            Console.WriteLine("All Done!");
+
+            Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
         }
 
-        public static int Calculate(IEnumerable<UserActivity> ua, int days)
+        /// <summary>
+        /// Выполнение имитации и вывода информации объекта на его позицию
+        /// </summary>
+        /// <param name="worker"></param>
+        private static void Handler(Work work, int maxLength)
         {
-            double quantityActivity = ua.Where(a => a.DaysByActivity >= days).Count();
-            double quantityRegistration = ua.Where(a => (DateTime.Now - a.DateRegistration).Days >= days).Count();
-            double result = (quantityActivity / (quantityRegistration < 1 ? 1 : quantityRegistration)) * 100;
+            Stopwatch sw = new Stopwatch(); // инициализация экземпляра таймера для фиксации времени выполнения
+            sw.Start(); // запуск таймера
 
-            return (int)result;
+            // поскольку класс Console является статическим, для операций с консолью необходимо использовать блокировку для позиционирования курсора
+            lock (locker) 
+            {
+                // вывод информации об объекте и текущем потоке
+                Console.SetCursorPosition(work.X, work.Y);
+                Console.Write($"{work.Y}({Environment.CurrentManagedThreadId})\t");
+                work.X = Console.CursorLeft; // сохранение текущего положения в строке, деблокировка
+            }
+
+            int startPos = work.X; // стартовая позиция после вывода первичной информации для корректного отображения количества итераций
+
+            for (var i = 0; i < maxLength; i++)
+            {
+                try
+                {
+                    Task.Delay(new Random().Next(10, 100)).Wait(); // имитация выполнения обработки
+
+                    // сравнение случайно сгенерированного свойства Chance с прозвольным значением, при выполении условия, выброс обрабатываемого исключения
+                    if (work.Chance > 8) throw new Exception($"Случайное исключение в потоке {Environment.CurrentManagedThreadId}, шаг {work.X}");
+
+                    // если нет исключения - блокировка для вывода итерации цветом по умолчанию
+                    lock (locker) 
+                    {
+                        Console.SetCursorPosition(work.X, work.Y);
+                        Console.Write($"■ {work.X - startPos}");  
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Trace.TraceError(ex.Message); // запись сообщения об исключении в отладчике с уровнем Error
+
+                    lock (locker)
+                    {
+                        // вывод итерации цвета исклюения, возврат цвета в исходное состояние
+                        Console.SetCursorPosition(work.X, work.Y);
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($"■ {work.X - startPos}");
+                        Console.ForegroundColor = ConsoleColor.Green;
+                    }
+                }
+
+                work.X++; // позиция для вывода следующей итерации
+                work.UpdateChance(); // генерация случайного значения для имитации исключения
+            }
+
+            lock (locker)
+            {
+                queue.Enqueue(Environment.CurrentManagedThreadId); // добавление в очередь потока
+                Console.SetCursorPosition(work.X, work.Y);         // позиционирование
+                Console.Write($" {work.X - startPos}  ");          // расчет текущей итерации
+                Console.ForegroundColor = ConsoleColor.Red;        // смена цвета вывода
+                Console.Write($"{queue.Count}! ({(double)sw.ElapsedMilliseconds/1000})"); // вывод позиции завершенной имитации, времени выполнения в секундах
+                Console.ForegroundColor = ConsoleColor.Green;      // исходный цвет вывода 
+            }
         }
 
-        public static object Calculate(IEnumerable<UserActivity> ua)
+        /// <summary>
+        /// Установка свойст окна консоли.
+        /// </summary>
+        /// <param name="width">Ширина окна консоли</param>
+        /// <param name="height">Высота окна консоли</param>
+        private static void ConsoleInit(int width, int height)
         {
-            double quantityActivity = ua.Where(a => a.DaysByActivity >= 7).Count();
-            double quantityRegistration = ua.Where(a => (DateTime.Now - a.DateRegistration).Days >= 7).Count();
-            double result = (quantityActivity / (quantityRegistration < 1 ? 1 : quantityRegistration)) * 100;
+            Console.Clear(); // очистка окна консоли, позиция курсора по умолчанию
 
-            var groups = ua.GroupBy(l => l.DaysByActivity).Select(g => new { Days = g.Key, UsersCount = g.Count() });
+            Console.CursorVisible = false; // отключение видимости курсора
 
-            var group = new { Data = groups.ToList(), result = (int)result };
+            Console.ForegroundColor = ConsoleColor.Green; // цвет выводящейся информации
 
-            return group;
+            Console.SetWindowSize(width + 50, height + 25); // размер окна консоли (константные значения произвольные)
         }
-    }
-
-    public class UserActivity
-    {
-        public int UserID { get; set; }
-
-        public DateTime DateRegistration { get; set; }
-
-        public DateTime DateLastActivity { get; set; }
-
-        public int DaysByActivity => (DateLastActivity - DateRegistration).Days;
     }
 }
